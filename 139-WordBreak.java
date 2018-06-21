@@ -5,18 +5,28 @@ class Solution {
     int maxlen = 0;
     int[] dictLetters = new int[26];
     HashSet<String> dictSet = new HashSet<String>();
+    int[] soln; 
     
     public boolean wordBreak(String s, List<String> wordDict) {
+        
+        // test input
+        //s= "catsandog";
+        //wordDict = Arrays.asList(new String[]{"cats","dog","sand","and","cat"});
+        
+        soln = new int[s.length()];
+        
+        minlen = 1;
+        maxlen = s.length();
+        //optional optimization
         if(!optimize(s, wordDict)) {
             return false;
         }
-   //     return wordBreakRec(s, new ArrayList<String>(dictSet));
-            
-//        return wordBreakRec(s, wordDict); // recursive
-        return wordBreakHashRec(s, dictSet);
+        return wordBreakHashRec(s, dictSet, 0);
     }
 
     public boolean optimize(String s, List<String> wordDict) {
+        minlen = 10000;
+        maxlen = 1;
         for(String word : wordDict) {
             dictSet.add(word);
             addToLetterArray(word, dictLetters);
@@ -51,30 +61,40 @@ class Solution {
         }
         for(String word : wordDict) {
             dictSet.remove(word);
-            if(!wordBreakHashRec(word, dictSet)) {
+            if(!wordBreakHashRec(word, dictSet,0)) {
                 dictSet.add(word);
             }
         }
         System.out.println(dictSet);
         if(!letterCheck(s)) return false;
-        return wordBreakHashRec(s, dictSet);
+        return wordBreakHashRec(s, dictSet, 0);
     }
     
-    public boolean wordBreakHashRec(String s, Set dictSet) {
-        System.out.println("checking string " + s);
-        
+    public boolean wordBreakHashRec(String s, Set dictSet, int startInd) {
+        if(soln[startInd]==-1) return false;
+        if(soln[startInd]==1) return true;
+        //System.out.println("checking string " + s);
+        if(s.length() < minlen) {
+            return false;
+        }
         for(int i=maxlen; i > 0 && i >= minlen; i--) {
-            System.out.println("checking string " + dictSet.contains(s.substring(0,i)));
+            if(s.length() < i) {
+                continue;
+            }
+            //System.out.println("checking string " + s.substring(0,i));
             if(dictSet.contains(s.substring(0,i))) {
                 if(i==s.length()) {
+                    soln[startInd] = 1;
                     return true;
                 } else {
-                    if(wordBreakHashRec(s.substring(0,i), dictSet)) {
+                    if(wordBreakHashRec(s.substring(i), dictSet, i)) {
+                        soln[startInd] = 1;
                         return true;
                     }
                 }
             }
         }
+        soln[startInd] = -1;
         return false;
     }
     
