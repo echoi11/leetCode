@@ -1,46 +1,76 @@
-# leetCodeclass LRUCache {
+public class LRUCache {
+
+    // capacity
+    int capacity;
 
     // free capacity
     int remaining;
     
     // map of values
-    int[] values;
+    HashMap<LinkNode> map;
     
     // linked list, ordered with LRU at end.
     LinkNode lnHead; // first node
     LinkNode lnTail; // last node
     
     public LRUCache(int capacity) {
-        values = new int[capacity];
+        this.capacity = capacity;
         remaining = capacity;
     }
     
+    public void initLRU(int key, int value) {
+        map = new HashMap<LinkNode>();
+        LinkNode ln = new LinkNode(key, value);
+        lnHead = ln;
+        lnTail = ln;
+        map.put(key, ln);
+        remaining--;
+    }
+    
     public int get(int key) {
-        
+        LinkNode ln = getLn(key);
+        if(ln==null) {
+            return -1;
+        } else {
+            return ln.value;
+        }
+    }
+    
+    public LinkNode getLn(int key) {
+        LinkNode ln = map.get(key);
+        if(ln!=null) {
+            moveToHead(ln);
+            return ln;
+        } else {
+            return null;
+        }
     }
     
     public void put(int key, int value) {
+        if(capacity==remaining) {
+            initLRU(key, value);
+        }
+        
         // is it new, or already exists?
-        LinkNode gln = getLn(int); // todo
-        if(gln != null) {
-            // exists
+        LinkNode gln = getLn(int);
+        if(gln != null) { // already exists
             gln.value = value;
-            moveToHead(gln);
+            // moveToHead(gln); // already done by getLn()
         } else {
             //new
             if(remaining == 0) {
                 // overwrite tail
+                map.remove(lnTail.key);
                 LinkNode ln = lnTail;
+                ln.key = key;
                 ln.value = value;
-                if(ln.prev!=null) {
-                    ln.prev.next = null;
-                    lnTail = ln.prev;
-                }
-                moveToHead(ln)
+                map.put(key, ln);
+                moveToHead(ln);
             } else {
                 remaining--;
+                LinkNode ln = new LinkNode(key, value);
+                map.put(key, ln);
                 // always put at front of link list
-                LinkNode ln = new LinkNode(value);
                 moveToHead(ln);
         }
     }
@@ -51,6 +81,9 @@
         }
         if(ln.prev!=null) {
             ln.prev.next = ln.next;
+            if(ln == lnTail) {
+                lnTail = ln.prev;
+            }
         }
         if(ln.next!=null) {
             ln.next.prev = ln.prev;
@@ -61,11 +94,12 @@
     }
     
     public class LinkNode {
+        int key;
         int value;
         LinkNode next;
         LinkNode prev;
         
-        public LinkNode(int value) {
+        public LinkNode(int key, int value) {
             this.value = value;
         }
     }
