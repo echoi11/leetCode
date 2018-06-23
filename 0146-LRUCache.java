@@ -7,7 +7,7 @@ public class LRUCache {
     int remaining;
     
     // map of values
-    HashMap<LinkNode> map;
+    HashMap<Integer, LinkNode> map;
     
     // linked list, ordered with LRU at end.
     LinkNode lnHead; // first node
@@ -19,7 +19,7 @@ public class LRUCache {
     }
     
     public void initLRU(int key, int value) {
-        map = new HashMap<LinkNode>();
+        map = new HashMap<Integer, LinkNode>();
         LinkNode ln = new LinkNode(key, value);
         lnHead = ln;
         lnTail = ln;
@@ -28,6 +28,9 @@ public class LRUCache {
     }
     
     public int get(int key) {
+        if(capacity==remaining) {
+            return -1;
+        }
         LinkNode ln = getLn(key);
         if(ln==null) {
             return -1;
@@ -49,10 +52,11 @@ public class LRUCache {
     public void put(int key, int value) {
         if(capacity==remaining) {
             initLRU(key, value);
+            return;
         }
         
         // is it new, or already exists?
-        LinkNode gln = getLn(int);
+        LinkNode gln = getLn(key);
         if(gln != null) { // already exists
             gln.value = value;
             // moveToHead(gln); // already done by getLn()
@@ -72,6 +76,7 @@ public class LRUCache {
                 map.put(key, ln);
                 // always put at front of link list
                 moveToHead(ln);
+            }
         }
     }
     
@@ -93,13 +98,14 @@ public class LRUCache {
         lnHead = ln;
     }
     
-    public class LinkNode {
+    private class LinkNode {
         int key;
         int value;
         LinkNode next;
         LinkNode prev;
         
         public LinkNode(int key, int value) {
+            this.key = key;
             this.value = value;
         }
     }
