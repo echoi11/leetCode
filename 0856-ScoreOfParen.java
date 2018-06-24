@@ -5,7 +5,7 @@ class Solution {
     
     String res;
 
-    ArrayList l = new ArrayList();
+    ArrayList <Node>l = new ArrayList<Node>();
     
     int result = 0;
     int tempResult = 0;
@@ -32,41 +32,64 @@ class Solution {
         }
         System.out.println(exp);
         
-//        exp = new StringBuilder("");
-        res = exp.toString();
-//        result = eval(0);
-        System.out.println(exp);
+        
+        Node root = new Node();
+        Node res = root;
+        Node p = res;
+        for(int i=0; i < S.length()-1; i++) {
+            if(S.charAt(i) == '(') {
+                if(S.charAt(i+1) =='(') {   // ((
+                    exp.append("2*(");
+                    p.value = 2;
+                    res = new Node();
+                    p.mult = res;
+                    res.prev = p;
+                    p = res;
+                } else {                    // ()
+                    exp.append("1");
+                    p.value = 1;
+                }
+            } else { // )
+                if(S.charAt(i+1)=='(') {    // )(
+                    exp.append("+");
+                    res = new Node();
+                    p.add = res;
+                    res.prev = p.prev;
+                    p = res;
+                } else { // ))
+                    exp.append(")");
+                    p = p.prev;
+                }
+            }
+        }
+
+        result = eval(root);
         
         return result;
         
     }
     
-//     private int eval(int i) {
-//         if(i == res.length()) { // todo
-//             exp.append(0); // todo
-//             return 0;   // todo
-//         }
-        
-//         char c = res.charAt(i);
-        
-//         if(c == '(') {
-//             return eval(i+1);
-//         } else if(c == '2') {
-//             return 2 * eval(i+2);
-//         } else if(c == '1') {
-//             return 1;
-//         } else if(c == ')') {
-//             // ???
-//         }
-//     }
-
-    // "(())()"
-         // 2*(1)+1
-         // 2*(1+0
-//     "(())"
-// "()()"
-// "(()(()))"
-// "(())()"
-// "((()))"
+    private int eval(Node n) {
+        if(n.mult!=null) {
+            n.value = n.value * eval(n.mult);
+        }
+        if(n.add!=null) {
+            n.value = n.value + eval(n.add);
+        }
+        return n.value;
+    }
     
+    private class Node {
+        Node prev;
+        Node mult; // for *
+        Node add; // for *
+        int value;
+        
+        public Node() {
+        }
+
+        public Node(int value) {
+            this.value = value;
+        }
+    }
 }
