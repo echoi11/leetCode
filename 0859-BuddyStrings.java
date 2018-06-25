@@ -22,10 +22,6 @@ class Solution {
 //             isSame = true;
 //         }
         
-        // if more than 2 letters are different => false
-        // if 2 or less, but the letters are not the same => false
-        // if 2 or less, same letters and more than 2 letters are the same, true
-        
         int diffPos=0;
         
         for(int i=0; i < A.length(); i++) {
