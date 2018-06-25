@@ -1,109 +1,117 @@
 class Solution {
     
-    int[] fleet;
+    TreeSet<Fleet> ft = new TreeSet<Fleet>();
+    TreeSet<Fleet> ft2 = new TreeSet<Fleet>();
+    int numOfFleet = 0;
+    
     
     public int carFleet(int target, int[] position, int[] speed) {
-        if(position==null || position.length==0) {
-            return 0;
+        if(target==0 || position==null || position.length==0
+          || speed ==null || speed.length==0) {
+            return numOfFleet;
         }
-        // sort the list
-        int temp;
-        for(int j = 0; j < position.length; j ++ ) {
-            for(int i = 0 ; i < position.length - 1; i++) {
-                if(position[i] < position[i+1]) {
-                    swap(position, i, i+1);
-                    swap(speed, i, i+1);
-                }
-//                System.out.println("position=" + Arrays.toString(position));
-            }
+        for(int i=0; i < position.length; i++) {
+            ft.add(new Fleet(position[i], speed[i]));
         }
         
-        initFleet(position.length);
-        System.out.println("init position=" + Arrays.toString(position));
-        System.out.println("init speed   =" + Arrays.toString(speed));
+        double ttt = 0d;
+        int fnum = 0;
+        int prevPosition=0;
         
-        int cycles = target;
-        while(cycles > 0) {
-            for(int i = 0; i < position.length - 1; i ++ ) {
-                if(position[i]<=target && position[i]==position[i+1]) {
-                    // combine fleets if two cars are at same position but not past destination
-                    if(fleet[i] != fleet[i+1]) {
-                        fleet[i+1] = fleet[i];
-                        speed[i+1] = speed[i];
-                        // numOfFleet--;
+        int minSpeed;
+        boolean canMerge;
+        
+        while(true) {
+            ttt = 0d;
+            fnum = 0;
+            prevPosition=0;
+            ft2 = new TreeSet<Fleet>();
+            minSpeed=0;
+            canMerge = false;
+            for(Fleet f : ft) {
+                //System.out.println(fnum + ":" + f);
+
+                //System.out.println("minspeed:"+minSpeed);
+                if(fnum==0) {
+                    minSpeed = f.speed;
+                } else {
+                    if(f.speed > minSpeed) {
+                        canMerge = true;
+                    } else {
+                        minSpeed = f.speed;
                     }
                 }
-            }
-            System.out.println("revised fleet =" + Arrays.toString(fleet));
-            System.out.println("position      =" + Arrays.toString(position));
-
-            double [] timeToTarget= new double[fleet.length];
-            for(int i = 0; i < position.length; i ++ ) {
-                //System.out.println(i+":pos, speed:" + position[i] + ","+speed[i]);
-                if((position[i] < target) && (position[i]+ speed[i] >=target)) {
-                    timeToTarget[i] = 1d * (target - position[i]) / speed[i]; // 0 < n < =1
-                } else {
-                    //System.out.println((position[i] < target) + "");
-                    //System.out.println((position[i] + speed[i] >= target) + "");
-                    timeToTarget[i] =0;
+                //System.out.println("canMerge:"+canMerge);
+                
+                if(f.position >= target) { // car has finished
+                    // dont move it to new set
+                    System.out.println("fleet finished: "+ f);
+                    numOfFleet++;
+                    prevPosition = -1; // prev car has finished;
+                    minSpeed = 0;
+                    fnum++;
+                    continue;
                 }
-                //System.out.println("ttt="+ timeToTarget[i]);
-                if(i==0) {
-                    position[0] += speed[0];
-                } else {
-                    if(timeToTarget[i-1] > 0d) { // can this car reach target in time?
-                        //System.out.println("timeToTarget check..." + i);
-                        //System.out.println(""+(speed[i] * timeToTarget[i-1] >= (target - position[i])));
-                        if(speed[i] * timeToTarget[i-1] >= (target - position[i])) {
-                            int iToMerge = i;
-                            int thisFleet = fleet[i];
-                            int targetFleet = fleet[i-1];
-                            while(iToMerge < fleet.length) {
-                                if(fleet[iToMerge] == thisFleet) {
-                                    fleet[iToMerge] = targetFleet;
-                                    iToMerge++;
-                                } else {
-                                    break;
-                                }
-                            }
-                        } else {
-                            timeToTarget[i-1] =0;
+
+                if(fnum > 0) {
+                    // check if it caught up to prior car
+                    if(prevPosition >=0) { // prev car has not reached target;
+                        //System.out.println("ttt:"+ttt+"prevPos:"+prevPosition);
+                        
+                        if((ttt * f.speed) + f.position >= prevPosition) {
+                            // merge this one with prior fleet ie dont add to new set
+                            //System.out.println("merging with prior fleet: "+ f);
+                            fnum++;
+                            continue;
                         }
                     }
-                    position[i] = Math.min(position[i] + speed[i], position[i-1]);
                 }
+
+                if(f.speed + f.position >= target) {
+                    ttt = 1d * (target - f.position) / f.speed;
+                } else {
+                    ttt = 1d;
+                }
+
+                f.position = Math.min(target, f.position + f.speed);
+                prevPosition = f.position;
+                //System.out.println("Adding " + f);
+                ft2.add(f);
+
+                fnum++;
             }
-            cycles--;
-            System.out.println("position after=" + Arrays.toString(position));
+            if(!canMerge) {
+                numOfFleet += ft2.size();
+                break;
+            }
+            if(ft2.isEmpty()) {
+                break;
+            }
+            ft = ft2;
         }
-        
-        return numOfFleet();
-        
+        return numOfFleet;
     }
     
-    private void swap(int[] a, int i1, int i2) {
-        int temp = a[i1];
-        a[i1] = a[i2];
-        a[i2] = temp;
-    }
+    
+    private class Fleet implements Comparable<Fleet> {
+        int position;
+        int speed;
         
-    private void initFleet(int size) {
-        // numOfFleet = size;
-        // finished = new int[size];
-        fleet = new int[size];
-        for(int i=0; i < size; i++) {
-            fleet[i]=i;
+        public Fleet(int position, int speed) {
+            this.position = position;
+            this.speed = speed;
+        }
+        
+        public int compareTo(Fleet other) {
+//            if(this.position == other.position) return 0;
+            if(this.position < other.position) return 1;
+            return -1;
+        }
+        
+        public String toString() {
+            return position +","+speed;
         }
     }
     
-    private int numOfFleet() {
-        int num = 1;
-        for(int i = 0; i < fleet.length - 1; i ++ ) {
-            if(fleet[i]!=fleet[i+1]) {
-                num++;
-            }
-        }
-        return num;
-    }
     
 }
