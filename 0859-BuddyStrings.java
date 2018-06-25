@@ -1,42 +1,66 @@
 class Solution {
-    int[] alpha = new int[26];
-    int[] beta = new int[26];
-    int numOfUniqLetters = 0;
+
+    char a1;
+    char a2;
+    char b1;
+    char b2;
+    boolean isSame = false;
+    int numOfUniq=0;
+    int [] alpha = new int[26];
+    
     public boolean buddyStrings(String A, String B) {
-        if(A==null || B==null || A.length() < 2 || B.length() <2 || A.length()!=B.length()) {
+        if(A.length()!=B.length()) {
             return false;
         }
-
-        int diff = 0;
-        for(int i =0; i< A.length(); i++) {
-            int c = A.charAt(i) - 'a';
-            if(alpha[c] ==0) {
-                numOfUniqLetters++;
+        
+        if(A.length() < 2) {
+            return false;
+        }
+        
+        // do this check in for loop
+//         if(A.equals(B)) {
+//             isSame = true;
+//         }
+        
+        // if more than 2 letters are different => false
+        // if 2 or less, but the letters are not the same => false
+        // if 2 or less, same letters and more than 2 letters are the same, true
+        
+        int diffPos=0;
+        
+        for(int i=0; i < A.length(); i++) {
+            char a = A.charAt(i);
+            if(alpha[a - 'a'] == 0 ) {
+                alpha[a - 'a']++;
+                numOfUniq++;
             }
-            alpha[c]++;
-
-            c = B.charAt(i) - 'a';
-            beta[c]++;
 
             if(A.charAt(i)!=B.charAt(i)) {
-                diff++;
-            }
-        }
-
-        if(A.equals(B)) {
-            if(numOfUniqLetters < A.length()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        for(int i =0; i< alpha.length; i++) {
-            if(alpha[i] != beta[i]) {
-                return false;
+                if(diffPos == 2) {
+                    return false;
+                }
+                if(diffPos==0) {
+                    a1 = A.charAt(i);
+                    b1 = B.charAt(i);
+                } else {
+                    a2 = A.charAt(i);
+                    b2 = B.charAt(i);
+                }
+                diffPos++;
             }
         }
         
-        return diff<=2;
+        if(diffPos==0) {
+            if(numOfUniq < A.length()) {
+                return true;
+            }
+        } else if(diffPos==2) {
+            if(a1==b2 && a2==b1) {
+                return true;
+            }
+        }
+        return false;
+        
+        
     }
 }
