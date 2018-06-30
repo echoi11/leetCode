@@ -22,30 +22,13 @@ class Solution {
                    
     private boolean isPalindrome(String s) {
         if(mem.contains(s)) return true;
-        //System.out.println("comparing=" + s);
         int len = s.length();
-        // System.out.println(s.substring(0, len/2));
-        // System.out.println(s.substring(len/2 + len%2));
-        // if(len < 2 || s.substring(0, len/2).equals(s.substring(len/2 + len%2))) {
-        //     mem.add(s);
-        //     return true;
-        // } else {
-        //     return false;
-        // }
         ArrayList<String> temp = new ArrayList<String>();
         for(int i=0; i< (s.length()/2); i++) {
-            // System.out.println(i);
-            // System.out.println(s.length()-i);
-            // if(mem.contains(s.substring(i,len-i))) {
-            //     return true;
-            // } else {
-            //     temp.add(s.substring(i,len-i));
-            // }
             if(s.charAt(i)!=s.charAt(s.length() - 1 - i)) {
                 return false;
             }
         }
-        // mem.addAll(temp);
         mem.add(s);
         return true;
     }
