@@ -1,5 +1,6 @@
 class Solution {
 
+
 	List<Integer> primes = new ArrayList<Integer>();
 	int prefix = 0;
 	boolean repeatLastDigit = false;
@@ -12,6 +13,9 @@ class Solution {
     		return N;
     	}
     	
+    	// need to know the left hand side of number and whether to
+    	// repeat the last digit of left hand side.
+    	// e.g. if N = 131 then left hand side = 13, repeat = false;
     	String s = N + "";
     	if(s.length() % 2 ==0) {
     		repeatLastDigit = true;
@@ -39,7 +43,8 @@ class Solution {
     	}
     	return true;
     }
-    
+
+    // get the next largest palindrome
     private int incrementPalindrome(int n) {
     	int len = String.valueOf(prefix).length();
     	int p = 0;
@@ -56,7 +61,8 @@ class Solution {
     	} while (p < n);
     	return p;
     }
-    
+
+    // return a palindrome number given the left hand half of the number.
     private int makePalindrome() {
     	String s = prefix + "";
     	int len = s.length();
@@ -79,5 +85,4 @@ class Solution {
     	}
     	return Integer.parseInt(String.valueOf(c));
     }
-
 }
