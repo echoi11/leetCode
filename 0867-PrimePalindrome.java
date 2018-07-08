@@ -23,10 +23,8 @@ class Solution {
     	
     	int p = N;
        	p = makePalindrome();
-    	// p = incrementPalindrome(N);
         while(true) {
         	if(p >= N && isPrime(p)) {
-        		//System.out.println(primes);
         		return p;
         	}
         	p = incrementPalindrome(p);
@@ -59,7 +57,7 @@ class Solution {
     	return p;
     }
     
-    private int makePalindrome() {//int prefix, boolean repeatLastDigit) {
+    private int makePalindrome() {
     	String s = prefix + "";
     	int len = s.length();
     	char [] c;
