@@ -26,7 +26,7 @@ class Solution {
                     min = Math.min(min, n.val - prevNum);
                 }
                 prevNum = n.val;
-                System.out.println(n.val);
+                //System.out.println(n.val);
                 if(n.right!=null) {
                     n = n.right;
                 } else {
