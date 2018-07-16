@@ -1,23 +1,29 @@
 class ExamRoom {
 
     // start, end indexes, inclusive and seat offset
-   int[][] seats; //= int [N][3]
+   // int[][] seats; //= int [N][3]
+    
+    int[] seats;
 
     // min dist to next student
     // Set of open seats, sorted by min dist, then by start index.
+    TreeSet<OpenSection> ts = new TreeSet<OpenSection>();
     // number of Seats
     int seated = 0;
-    int maxDist;
-    int maxSeat;
+//    int maxDist;
+//    int maxSeat;
     int numOfSeats;
     
     public ExamRoom(int N) {
         numOfSeats = N;
-        seats = new seats[N][2];
+        seats = new seats[N];
     }
     
     public int seat() {
         if(seated==0) {
+            OpenSection os = new OpenSection(0, N-1);
+            ts.add(os);
+            seated_++;
             seats[0][0] = 0;
             seats[0][1] = (N-1) *2;
             maxDist = seats[0][1];
@@ -87,14 +93,13 @@ class ExamRoom {
             this.start = start;
             this.end = end;
             if(start==0 && seat[0]==0) {
-                 seatOffset = 0;
-                 dist = end - start - 1;
-            } else if(end==numOfSeats-1) {
-                if(seat[end]==0)
+                seatOffset = 0;
+                dist = end - start - 1;
+            } else if(end==numOfSeats-1 && seat[end]==0) {
                 seatOffset = end - start;
                 dist = end - start - 1;
             } else {
-                dist = end - start - 1;
+                dist = (end - start - 1) / 2;
                 seatOffset = (end - start)/2;
             }
             
