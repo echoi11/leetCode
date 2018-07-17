@@ -5,12 +5,13 @@ class Solution {
 "3[a2[c]]"
 "2[abc]3[cd]ef"
 **/
+
     public String decodeString(String s) {
         char c;
         int num = 0;
         Stack<Integer> numStack = new Stack<Integer>();
-        Stack<String> strStack = new Stack<String>();
-        strStack.push("");
+        Stack<StringBuilder> strStack = new Stack<StringBuilder>();
+        strStack.push(new StringBuilder());
         for(int i=0; i < s.length(); i++) {
             c = s.charAt(i);
             while(c >= '0' && c <='9') {
@@ -20,21 +21,21 @@ class Solution {
             }
             if(num > 0 && c == '[') {
                 numStack.push(num);
-                strStack.push("");
+                strStack.push(new StringBuilder());
                 num = 0;
             } else if(c==']') {
                 int j = numStack.pop();
-                String strPop = strStack.pop();
-                String str = "";
+                StringBuilder strPop = strStack.pop();
+                StringBuilder str = new StringBuilder();
                 while(j > 0) {
-                    str = str + strPop;
+                    str.append(strPop);
                     j--;
                 }
-                strStack.push(strStack.pop() + str);
+                strStack.push(strStack.pop().append(str));
             } else {
-                strStack.push(strStack.pop() + c);
+                strStack.push(strStack.pop().append(c));
             }
         }
-        return strStack.pop();
+        return strStack.toString();
     }
 }
