@@ -18,15 +18,13 @@
 public class NestedIterator implements Iterator<Integer> {
 
 //    List<NestedInteger> nestedList;
-    Stack<List<NestedInteger>> st = new Stack<List<NestedInteger>>();
-    Stack<Integer> ist = new Stack<Integer>();
-    List<NestedInteger> cur = null;
-    int index = -1;
+    Stack<Iterator<NestedInteger>> st = new Stack<Iterator<NestedInteger>>();
+    NestedInteger cur = null;
+    Iterator<NestedInteger> iter;
     Integer nextVal = null;
     
     public NestedIterator(List<NestedInteger> nestedList) {
-        cur = nestedList;
-        index = 0;
+        iter = nestedList.iterator();
     }
 
     @Override
@@ -42,32 +40,25 @@ public class NestedIterator implements Iterator<Integer> {
         if(nextVal!=null) {
             return true;
         } else {
-            if(index >= cur.size()) {
+            if(iter.hasNext()) {
+                cur = iter.next();
+                if(cur.isInteger()) {
+                    nextVal = cur.getInteger();
+                    return true;
+                } else {
+                    if(iter.hasNext()) {
+                        st.push(iter);
+                    }
+                    iter = cur.getList().iterator();
+                    return hasNext();
+                }
+            } else {
                 if(!st.isEmpty()) {
-                    cur = st.pop();
-                    index = ist.pop();
+                    iter = st.pop();
                     return hasNext();
                 } else {
                     return false;
                 }
-            } else if(cur.get(index).isInteger()) {
-                nextVal = cur.get(index++).getInteger();
-                while(index >= cur.size() && !st.isEmpty()) {
-                    System.out.println("popping...");
-                    cur = st.pop();
-                    index = ist.pop();
-                }
-                return true;
-    //            System.out.println("int index=" + index);
-            } else {
-    //            System.out.println("list index=" + index);
-                if(index < cur.size() - 1) {
-                    st.push(cur);
-                    ist.push(index+1);
-                }
-                cur = cur.get(index).getList();
-                index=0;
-                return hasNext();
             }
         }
     }
